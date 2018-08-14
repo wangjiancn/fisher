@@ -10,18 +10,18 @@ class BookViewModel():
         if data:
             returned['total'] = 1
             returned['books'] = [cls._cut_book_data(data)]
-        pass
+        return returned
 
     @classmethod
-    def package_collection(cls, data,keyword):
+    def package_collection(cls, data, keyword):
         returned = {
-            'books':[],
-            'total':0,
-            'keyword':keyword
+            'books': [],
+            'total': 0,
+            'keyword': keyword
         }
         if data:
-            returned['total']:len(data['books'])
-            returned['books']:[cls._cut_book_data(book) for book in data['books']]
+            returned['total'] = len(data['books'])
+            returned['books']=[cls._cut_book_data(book) for book in data['books']]
         return returned
 
     @classmethod
@@ -30,7 +30,7 @@ class BookViewModel():
             'title': data['title'],
             'publisher': data['publisher'],
             'pages': data['pages'],
-            'author': '、'.join(data['author']), #用join处理后本地不方便操作，保存列表可以给js处理
+            'author': '、'.join(data['author']),  # 用join处理后本地不方便操作，保存列表可以给js处理
             'price': data['price'],
             'summary': data['summary'],
             'image': data['image'],

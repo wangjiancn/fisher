@@ -4,7 +4,7 @@
 # 不上传到git服务器
 
 STATUS = 'secure导入成功'
-DEBUG = False
+DEBUG = True
 
 #数据库相关
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:py123@localhost:3306/fisher'
