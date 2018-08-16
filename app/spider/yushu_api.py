@@ -7,19 +7,29 @@ class YuShuBook:
     isbn_api = 'http://t.yushu.im/v2/book/isbn/{}'  # {}可以通过format导入变量
     keyword_api = 'http://t.yushu.im/v2/book/search?q={}&count={}&start={}'
 
-    @classmethod
-    def search_isbn(cls, isbn):
-        url = cls.isbn_api.format(isbn)
-        result = HTTP.get(url)
-        return result
+    def __init__(self):
+        self.total = 0
+        self.books = []
 
-    @classmethod
-    def search_keyword(cls, keyword,page=1):
-        url = cls.keyword_api.format(keyword,current_app.config['PER_PAGE'],cls.calculate_start(page))
+    def search_isbn(self, isbn):
+        url = self.isbn_api.format(isbn)
         result = HTTP.get(url)
-        return result
+        self.__fill_single(result)
 
-    @staticmethod
+    def search_keyword(self, keyword,page=1):
+        url = self.keyword_api.format(keyword,current_app.config['PER_PAGE'],self.calculate_start(page))
+        result = HTTP.get(url)
+        self.__fill_collection(result)
+
+    def __fill_single(self,data):
+        if data:
+            self.total = 1
+            self.books.append(data)
+
+    def __fill_collection(self,data):
+        self.total = data['total']
+        self.books = data['books']
+
     def calculate_start(page):
         return (page-1)*current_app.config['PER_PAGE']
 

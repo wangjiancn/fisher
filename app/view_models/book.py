@@ -20,7 +20,7 @@ class BookViewModel():
             'keyword': keyword
         }
         if data:
-            returned['total'] = len(data['books'])
+            returned['total'] = data['total']
             returned['books']=[cls._cut_book_data(book) for book in data['books']]
         return returned
 
@@ -29,10 +29,10 @@ class BookViewModel():
         book = {
             'title': data['title'],
             'publisher': data['publisher'],
-            'pages': data['pages'],
+            'pages': data['pages'] or '',
             'author': '、'.join(data['author']),  # 用join处理后本地不方便操作，保存列表可以给js处理
             'price': data['price'],
-            'summary': data['summary'],
+            'summary': data['summary'] or '',
             'image': data['image'],
         }
         return book
