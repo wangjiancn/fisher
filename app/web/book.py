@@ -1,4 +1,6 @@
 # coding = utf-8
+import json
+
 from flask import jsonify, Blueprint, request
 from app.libs.helper import is_isbn_or_key
 from app.spider.yushu_api import YuShuBook
@@ -25,9 +27,10 @@ def search():
         if isbn_or_key == 'isbn':
             yushu_book.search_isbn(q)
         else:
-            yushu_book.search_keyword(q)
+            yushu_book.search_keyword(q, page)
 
         books.fill(yushu_book, q)
-        return jsonify(books)  # 标准库json实现 return json.dumps(result),200,{'content-type':'application/json'}
+        return json.dumps(books, default=lambda o: o.__dict__)
+        # return jsonify(books)  # 标准库json实现 return json.dumps(result),200,{'content-type':'application/json'}
     else:
         return jsonify(form.errors)
