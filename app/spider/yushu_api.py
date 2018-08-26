@@ -3,7 +3,6 @@ from flask import current_app
 from app.libs.get_http import HTTP
 
 class YuShuBook:
-    per_page = 15
     isbn_api = 'http://t.yushu.im/v2/book/isbn/{}'  # {}可以通过format导入变量
     keyword_api = 'http://t.yushu.im/v2/book/search?q={}&count={}&start={}'
 
@@ -18,6 +17,7 @@ class YuShuBook:
 
     def search_keyword(self, keyword,page=1):
         url = self.keyword_api.format(keyword,current_app.config['PER_PAGE'],self.calculate_start(page))
+        # url = self.keyword_api.format(keyword,current_app.config['PER_PAGE'],1)
         result = HTTP.get(url)
         self.__fill_collection(result)
 
@@ -30,6 +30,6 @@ class YuShuBook:
         self.total = data['total']
         self.books = data['books']
 
-    def calculate_start(page):
+    def calculate_start(self,page):
         return (page-1)*current_app.config['PER_PAGE']
 

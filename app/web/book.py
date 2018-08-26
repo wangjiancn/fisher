@@ -1,13 +1,12 @@
 # coding = utf-8
 import json
+from . import web
 
-from flask import jsonify, Blueprint, request
+from flask import jsonify, Blueprint, request, render_template, flash
 from app.libs.helper import is_isbn_or_key
 from app.spider.yushu_api import YuShuBook
 from app.forms.book import SearchForm
 from app.view_models.book import BookViewModel, BookCollection
-
-web = Blueprint('web', __name__)
 
 
 @web.route('/book/search')
@@ -30,7 +29,22 @@ def search():
             yushu_book.search_keyword(q, page)
 
         books.fill(yushu_book, q)
-        return json.dumps(books, default=lambda o: o.__dict__)
+        # return json.dumps(books, default=lambda o: o.__dict__)
         # return jsonify(books)  # 标准库json实现 return json.dumps(result),200,{'content-type':'application/json'}
     else:
-        return jsonify(form.errors)
+        flash('关键字不符合要求，请重新输入关键字')
+    return render_template('search_result.html',books = books)
+
+@web.route('/test')
+def test():
+    r = {
+        'name':'wangjian',
+        'age':20
+    }
+    return render_template('test.html',data = r)
+
+@web.route('/book/<isbn>/detail')
+def book_detail(isbn):
+    pass
+
+

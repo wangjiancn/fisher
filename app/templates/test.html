@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+    {{ super() }}
+    <h1>
+        {% for key,value in data.items() %}
+            {{ key }}
+            {{ value }}
+        {% endfor %}
+    </h1>
+{% endblock %}
