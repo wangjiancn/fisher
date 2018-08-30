@@ -33,18 +33,12 @@ def search():
         # return jsonify(books)  # 标准库json实现 return json.dumps(result),200,{'content-type':'application/json'}
     else:
         flash('关键字不符合要求，请重新输入关键字')
-    return render_template('search_result.html',books = books)
+    return render_template('search_result.html', books=books,form = form)
 
-@web.route('/test')
-def test():
-    r = {
-        'name':'wangjian',
-        'age':20
-    }
-    return render_template('test.html',data = r)
 
 @web.route('/book/<isbn>/detail')
 def book_detail(isbn):
-    pass
-
-
+    yushu_book = YuShuBook()
+    yushu_book.search_isbn(isbn)
+    book = BookViewModel(yushu_book.books[0])
+    return render_template('book_detail.html',book = book,wishes = [],gifts=[])

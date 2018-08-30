@@ -18,3 +18,4 @@ def register_blueprint(app):
     from app.web.book import web
     app.register_blueprint(web)
 
+
