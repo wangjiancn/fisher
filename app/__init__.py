@@ -1,7 +1,9 @@
 # coding = utf-8
+from flask_login import LoginManager
 from flask import Flask
 from app.models.base import db
 
+login_manager = LoginManager()
 def create_app():
     app = Flask(__name__)
     app.config.from_object('app.setting')
@@ -10,6 +12,7 @@ def create_app():
     # print(app.config['STATUS'])
     register_blueprint(app)
     db.init_app(app)    #初始化数据库
+    login_manager.init_app(app)
     db.create_all(app=app)  #创建Book数据表
     return app
 
