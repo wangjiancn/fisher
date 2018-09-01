@@ -7,6 +7,7 @@ STATUS = 'secure导入成功'
 DEBUG = True
 RUN_PORT = 80
 RUN_HOST = '0.0.0.0'
+SECRET_KEY = ''
 
 #数据库相关
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:py123@localhost:3306/fisher'
