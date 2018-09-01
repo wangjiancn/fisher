@@ -1,6 +1,6 @@
 # coding = utf-8
 from flask import Flask
-from app.models.book import db
+from app.models.base import db
 
 def create_app():
     app = Flask(__name__)
@@ -17,5 +17,6 @@ def create_app():
 def register_blueprint(app):
     from app.web.book import web
     app.register_blueprint(web)
+
 
 

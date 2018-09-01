@@ -1,7 +1,6 @@
 # coding = utf-8
 import json
 from . import web
-
 from flask import jsonify, Blueprint, request, render_template, flash
 from app.libs.helper import is_isbn_or_key
 from app.spider.yushu_api import YuShuBook
@@ -40,5 +39,5 @@ def search():
 def book_detail(isbn):
     yushu_book = YuShuBook()
     yushu_book.search_isbn(isbn)
-    book = BookViewModel(yushu_book.books[0])
+    book = BookViewModel(yushu_book.first)
     return render_template('book_detail.html',book = book,wishes = [],gifts=[])
