@@ -13,12 +13,12 @@ class RegisterForm(Form):
     # todo 自定义验证器，函数以validate_ + 校验对象名 作为名字
     def validate_email(self, field):
         # db.session.
-        if User.query.filter_by(email = field.date).first():
+        if User.query.filter_by(email=field.data).first():
             raise ValidationError('电子邮件已被注册')
 
     def validate_nickname(self, field):
         # db.session.
-        if User.query.filter_by(email = field.date).first():
+        if User.query.filter_by(email=field.data).first():
             raise ValidationError('昵称已被注册')
 
 class LoginForm(Form):

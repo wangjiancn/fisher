@@ -11,11 +11,11 @@ from app.models.base import db
 def register():
     form = RegisterForm(request.form)
     if request.method == 'POST' and form.validate():
-        user = User()
-        user.set_attrs(form.data)
-        db.session.add(user)
-        db.session.commit()
-        redirect(url_for('web.login'))
+        with db.auto_commit():
+            user = User()
+            user.set_attrs(form.data)
+            db.session.add(user)
+        return redirect(url_for('web.login'))
     return render_template('auth/register.html', form=form)
 
 
@@ -25,10 +25,14 @@ def login():
     if request.method == 'POST' and form.validate():
         user = User.query.filter_by(email=form.email.data).first()
         if user and user.check_password(form.password.data):
-            login_user(user)
+            login_user(user, remember=True)
+            next = request.args.get('next')
+            if not next or not next.startswith('/'):  # 防止重定向攻击
+                next = url_for('web.index')
+            return redirect(next)
         else:
             flash('账号不存在或密码错误')
-    return render_template('auth/login.html',form = form)
+    return render_template('auth/login.html', form=form)
 
 
 @web.route('/reset/password', methods=['GET', 'POST'])

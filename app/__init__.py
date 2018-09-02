@@ -13,6 +13,8 @@ def create_app():
     register_blueprint(app)
     db.init_app(app)    #初始化数据库
     login_manager.init_app(app)
+    login_manager.login_view = 'web.login'
+    login_manager.login_message = '请先登录或注册'
     db.create_all(app=app)  #创建Book数据表
     return app
 

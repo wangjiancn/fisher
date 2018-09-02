@@ -9,6 +9,8 @@ class BookViewModel():
         self.summary = book['summary']
         self.isbn = book['isbn']
         self.image = book['image']
+        self.pubdate = book['pubdate']
+        self.binding = book['binding']
 
     #todo filter用法
     @property
