@@ -1,15 +1,22 @@
-from flask import url_for, redirect, flash
+from flask import url_for, redirect, flash, render_template
 from flask_login import current_user, login_required
 
 from app.models.wish import Wish
+from app.view_models.wish import MyWishes
 from . import web
 from app.models.base import db
 
 
 
 @web.route('/my/wish')
+@login_required
 def my_wish():
-    pass
+    uid = current_user.id
+    wishes_of_mine = Wish.get_user_wishes(uid)
+    isbn_gift_list = [wish.isbn for wish in wishes_of_mine]
+    wish_count_list = Wish.get_gifts_counts(isbn_gift_list)
+    view_model = MyWishes(wishes_of_mine, wish_count_list)
+    return render_template('my_wish.html', wishes=view_model.wishes)
 
 
 @web.route('/wish/book/<isbn>')
