@@ -45,7 +45,7 @@ class User(UserMixin, Base):
     # def get_id(self):
     #     return self.id
     def can_save_to_list(self, isbn):
-        if is_isbn_or_key(isbn):
+        if is_isbn_or_key(isbn) == 'key':
             return False
         yushu_book = YuShuBook()
         yushu_book.search_isbn(isbn)

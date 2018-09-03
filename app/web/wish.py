@@ -1,7 +1,7 @@
 from flask import url_for, redirect, flash
 from flask_login import current_user, login_required
 
-from app.models.gift import Gift
+from app.models.wish import Wish
 from . import web
 from app.models.base import db
 
@@ -17,11 +17,10 @@ def my_wish():
 def save_to_wish(isbn):
     if current_user.can_save_to_list(isbn):
         with db.auto_commit():
-            gift = Gift()
-            gift.isbn = isbn
-            gift.uid = current_user.id
-            current_user.beans += 0.5
-            db.session.add(gift)
+            wish = Wish()
+            wish.isbn = isbn
+            wish.uid = current_user.id
+            db.session.add(wish)
     else:
         flash('赠送清单或心愿清单已存在，请不要重复添加')
     return redirect(url_for('web.book_detail', isbn=isbn))
