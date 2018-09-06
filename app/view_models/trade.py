@@ -5,6 +5,7 @@ class TradeInfo():
     def __init__(self, goods):
         self.total = 0
         self.trades = []
+        self.__parse(goods)
 
     def __parse(self, goods):
         self.total = len(goods)
@@ -12,11 +13,11 @@ class TradeInfo():
 
     def __map_to_trade(self, single):
         if single.create_time:
-            time = single.create_time.strftime('%Y-%M-%D'),
+            push_time = single.create_datetime.strftime('%Y-%m-%d'),
         else:
-            time = '未知'
+            push_time = '未知'
         return dict(
             user_name=single.user.nickname,
-            time=time,
+            time=push_time,
             id=single.id
         )

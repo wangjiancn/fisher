@@ -1,7 +1,10 @@
 # coding = utf-8
 from contextlib import contextmanager
-from flask import flash, redirect, url_for, render_template
+from flask import flash, redirect, url_for, render_template, current_app
 from flask_login import login_required, current_user
+
+from app.libs.enums import PendingStatus
+from app.models.drift import Drift
 from app.models.gift import Gift
 from app.view_models.gift import MyGifts
 from . import web
@@ -27,7 +30,7 @@ def save_to_gifts(isbn):
             gift = Gift()
             gift.isbn = isbn
             gift.uid = current_user.id
-            current_user.beans += 0.5
+            current_user.beans += current_app.config['BEANS_UPLOAD_ONE_BOOK']
             db.session.add(gift)
     else:
         flash('赠送清单或心愿清单已存在，请不要重复添加')
@@ -36,4 +39,12 @@ def save_to_gifts(isbn):
 
 @web.route('/gifts/<gid>/redraw')
 def redraw_from_gifts(gid):
-    pass
+    gift = Gift.query.filter_by(id=gid, launched=False).first_or_404()
+    drift = Drift.query.filter_by(gift_id=gid, pending=PendingStatus.Waiting).first()
+    if drift:
+        flash('这个礼物正处于交易状态，请先前往鱼漂完成该交易')
+    else:
+        with db.auto_commit():
+            current_user.beans -= current_app.config['BEANS_UPLOAD_ONE_BOOK']
+            gift.delete()
+    return redirect(url_for('web.my_gifts'))

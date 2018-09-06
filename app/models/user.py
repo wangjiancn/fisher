@@ -1,15 +1,20 @@
 # coding = utf-8
+from math import floor
 
+from flask import current_app
 from sqlalchemy import Column, Integer, String, Boolean, Float
 from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
+from app.libs.enums import PendingStatus
 from app.libs.helper import is_isbn_or_key
-from app.models.base import Base
+from app.models.base import Base, db
 from flask_login import UserMixin
 
 from app import login_manager
 
 # UserMixin get_id默认用’id‘键作为默认参数
+from app.models.drift import Drift
 from app.models.gift import Gift
 from app.models.wish import Wish
 from app.spider.yushu_api import YuShuBook
@@ -38,12 +43,30 @@ class User(UserMixin, Base):
     def password(self, raw):
         self._password = generate_password_hash(raw)
 
+    @property
+    def summary(self):
+        return dict(
+            nickname=self.nickname,
+            beans=self.beans,
+            email=self.email,
+            send_receive=str(self.send_counter) + '/' + str(self.receive_counter)
+        )
+
+
     def check_password(self, raw):
         return check_password_hash(self._password, raw)
 
     # LoginManager要求函数
     # def get_id(self):
     #     return self.id
+    def can_send_drift(self):
+        if self.beans < 1:
+            return False
+        success_gift_count = Gift.query.filter_by(uid=self.id, launched=True).count()
+        success_receive_count = Drift.query.filter_by(requester_id=self.id, pending=PendingStatus.Success).count()
+
+        return True if floor(success_receive_count / 2) <= floor(success_gift_count) else False
+
     def can_save_to_list(self, isbn):
         if is_isbn_or_key(isbn) == 'key':
             return False
@@ -57,6 +80,24 @@ class User(UserMixin, Base):
             return True
         else:
             return False
+
+    def generate_token(self, expiation=600):
+        seria = Serializer(current_app.config['SECRET_KEY'], expiation)
+        temp = seria.dumps({'id': self.id}).decode('utf8')
+        return temp
+
+    @staticmethod
+    def reset_password(token, new_password):
+        series = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = series.loads(token.encode('utf8'))
+        except:
+            return False
+        uid = data.get('id')
+        with db.auto_commit():
+            user = User.query.get(uid)
+            user.password = new_password
+        return True
 
 
 @login_manager.user_loader
